@@ -4,34 +4,108 @@
 
 @section('conteudo')
 
-<div class="container mt-5">
+    <div class="container mt-5">
 
-    <h1 class="mb-4">
-        Lista de Filmes
-    </h1>
+        <h1 class="h2 mb-4">Filmes</h1>
 
-    @foreach ($filmes as $filme)
+        <a href="{{ route('filmes.create') }}" class="btn btn-primary">
+            Novo Filme
+        </a>
 
-        <div class="card mb-3 p-3">
+       
+    </form>
 
-            <h3>
-                {{ $filme->nome }}
-            </h3>
+        {{-- LISTA DE FILMES --}}
+        <div class="row g-3">
 
-            @if ($filme->poster_url)
+            @forelse ($filmes as $filme)
 
-                <img
-                    src="{{ asset('storage/' . $filme->poster_url) }}"
-                    width="200"
-                    class="rounded"
-                >
+                @php
+                    $poster = $filme->imagens->firstWhere('pivot.poster', true);
+                @endphp
 
-            @endif
+                <div class="col-md-3">
+
+                    <div class="card h-100 shadow-sm">
+
+                        {{-- POSTER --}}
+                        @if ($poster)
+
+                            <img src="{{ asset('storage/' . $poster->caminho) }}" class="card-img-top"
+                                style="height: 300px; object-fit: cover;">
+
+                        @else
+
+                            <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 300px;">
+
+                                <span class="text-white">
+                                    Sem imagem
+                                </span>
+
+                            </div>
+
+                        @endif
+
+                        {{-- TEXTO --}}
+                        <div class="card-body text-center">
+
+                            <h5 class="card-title">
+                                {{ $filme->nome }}
+                            </h5>
+
+                            @if(isset($filme->ano))
+                                <p class="text-muted">
+                                    {{ $filme->ano }}
+                                </p>
+                            @endif
+
+                            <div class="d-flex justify-content-center gap-2 mt-3">
+
+                                <a href="{{ route('filmes.show', $filme->id) }}" class="btn btn-info btn-sm">
+                                    Ver
+                                </a>
+
+                                <a href="{{ route('filmes.edit', $filme->id) }}" class="btn btn-dark btn-sm">
+                                    Editar
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                <p>Nenhum filme encontrado.</p>
+
+            @endforelse
 
         </div>
 
-    @endforeach
+        {{-- PAGINAÇÃO --}}
+        <div class="d-flex justify-content-center mt-4">
+            {{ $filmes->links() }}
+        </div>
 
-</div>
+        {{-- INFO DA PAGINAÇÃO --}}
+        <p class="text-muted text-center">
+
+            Exibindo
+            {{ $filmes->firstItem() ?? 0 }}
+            –
+            {{ $filmes->lastItem() ?? 0 }}
+
+            de
+
+            {{ $filmes->total() }}
+
+            filmes
+
+        </p>
+
+    </div>
 
 @endsection

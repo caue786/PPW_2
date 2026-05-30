@@ -44,4 +44,10 @@ class Filme extends Model
     {
         return $this->hasMany(Avaliacao::class);
     }
+    public function imagens()
+{
+    return $this->belongsToMany(\App\Models\Imagem::class, 'imagem_filme')
+        ->withPivot('poster')
+        ->withTimestamps();
+}
 }

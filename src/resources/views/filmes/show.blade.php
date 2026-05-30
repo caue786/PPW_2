@@ -12,10 +12,14 @@
 
             <div class="col-md-4">
 
-                @if ($filme->poster_url)
+                @php
+                    $poster = $filme->imagens->firstWhere('pivot.poster', true);
+                @endphp
+
+                @if ($poster)
 
                     <img
-                        src="{{ asset('storage/' . $filme->poster_url) }}"
+                        src="{{ asset('storage/' . $poster->caminho) }}"
                         class="img-fluid rounded shadow"
                         alt="Poster do filme">
 
@@ -59,6 +63,24 @@
             </div>
 
         </div>
+
+        {{-- GALERIA DE IMAGENS --}}
+        @if ($filme->imagens->count())
+            <div class="mt-4">
+                <h5>Imagens</h5>
+
+                <div class="d-flex gap-2 flex-wrap">
+
+                    @foreach ($filme->imagens as $img)
+                        <img
+                            src="{{ asset('storage/' . $img->caminho) }}"
+                            width="120"
+                            class="rounded border {{ $img->pivot->poster ? 'border-danger' : '' }}">
+                    @endforeach
+
+                </div>
+            </div>
+        @endif
 
     </div>
 

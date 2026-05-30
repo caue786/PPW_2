@@ -33,6 +33,11 @@ class Pessoa extends Model
     }
     public function imagens()
     {
-        return $this->belongsToMany(Imagem::class);
+       return $this->belongsToMany(
+        Imagem::class,
+        'imagem_pessoa'
+    )
+    ->withPivot('poster')
+    ->withTimestamps();
     }
 }

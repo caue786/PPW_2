@@ -6,13 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Produtor extends Model
 {
-   protected $fillable = [
+     protected $table = 'produtores';
+
+    protected $fillable = [
         'pessoa_id'
     ];
-    public function filmes(){
-        return $this-> belongsToMany(Filme::class);
+
+    public function filmes()
+    {
+        return $this->belongsToMany(Filme::class);
     }
-    public function pessoa(){
+
+    public function pessoa()
+    {
         return $this->belongsTo(Pessoa::class);
     }
 }

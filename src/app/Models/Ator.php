@@ -7,13 +7,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ator extends Model
 {
-     protected $fillable = [
+     protected $table = 'atores';
+
+    protected $fillable = [
         'pessoa_id'
     ];
-    public function filmes(){
-        return $this-> belongsToMany(Filme::class);
+
+    public function filmes()
+    {
+        return $this->belongsToMany(Filme::class);
     }
-    public function pessoa(){
+
+    public function pessoa()
+    {
         return $this->belongsTo(Pessoa::class);
     }
 }

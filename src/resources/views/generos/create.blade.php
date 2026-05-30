@@ -1,14 +1,12 @@
 @extends('layouts.app')
 
-@section('titulo', 'Cadastrar Filme')
+@section('titulo', 'Novo Gênero')
 
 @section('conteudo')
 
     <div class="container mt-5">
 
-        <h1>Cadastrar Filme</h1>
-
-        {{-- ERROS --}}
+        <h1>Novo Gênero</h1>
         @if ($errors->any())
             <div class="alert alert-danger">
                 @foreach ($errors->all() as $erro)
@@ -16,14 +14,21 @@
                 @endforeach
             </div>
         @endif
+        <form method="POST" action="{{ route('generos.store') }}" enctype="multipart/form-data">
 
-        <form method="POST" action="{{ route('filmes.store') }}" enctype="multipart/form-data">
+           
+
             @csrf
 
-            @include('filmes.form-filme')
+            @include('generos.form')
 
-            <button class="btn btn-success">Salvar</button>
+            <button class="btn btn-primary">
+                Salvar
+            </button>
+
         </form>
+
+
 
     </div>
 

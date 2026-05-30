@@ -12,20 +12,28 @@ class FilmeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+   public function index(Request $request)
 {
-    $filmes = Filme::all();
+    $busca = $request->get('busca');
 
-    return view('filmes.index', compact('filmes'));
+    $filmes = Filme::with('imagens')
+        ->when($busca, function ($query, $busca) {
+            return $query->where('nome', 'ilike', "%{$busca}%");
+        })
+        ->orderBy('nome')
+        ->paginate(2)
+        ->withQueryString();
+
+    return view('filmes.index', compact('filmes', 'busca'));
 }
 
     /**
      * Show the form for creating a new resource.
      */
-   public function create()
-{
-    return view('filmes.create');
-}
+    public function create()
+    {
+        return view('filmes.create');
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -36,30 +44,74 @@ class FilmeController extends Controller
 
         'nome' => 'required|string',
 
-        'poster' => 'required|image|mimes:jpeg,png,webp|max:2048'
+        'duracao' => 'nullable|string',
+
+        'data_lancamento' => 'nullable|date',
+
+        'classificacao' => 'nullable|string',
+
+        'sinopse' => 'nullable|string',
+
+        'imagens' => 'required',
+
+        'imagens.*' => 'image|mimes:jpeg,png,webp|max:2048'
+
     ]);
 
     DB::beginTransaction();
 
     try {
 
-        $caminhoPoster = $request
-            ->file('poster')
-            ->store('posters', 'public');
+        // CRIA FILME
+        $filme = Filme::create([
 
-        $dados['poster_url'] = $caminhoPoster;
+            'nome' => $dados['nome'],
 
-        Filme::create($dados);
+            'duracao' => $dados['duracao'] ?? null,
+
+            'data_lancamento' => $dados['data_lancamento'] ?? null,
+
+            'classificacao' => $dados['classificacao'] ?? null,
+
+            'sinopse' => $dados['sinopse'] ?? null,
+
+        ]);
+
+        // IMAGENS
+        $arquivos = $request->file('imagens');
+
+        $posterIndex = $request->input('poster_index', 0);
+
+        foreach ($arquivos as $i => $arquivo) {
+
+            $caminho = $arquivo->store('imagens', 'public');
+
+            $imagem = \App\Models\Imagem::create([
+
+                'caminho' => $caminho,
+
+                'nome' => basename($caminho)
+
+            ]);
+
+            // RELACIONA COM FILME
+            $filme->imagens()->attach($imagem->id, [
+
+                'poster' => ($i == $posterIndex)
+
+            ]);
+        }
 
         DB::commit();
 
-        return redirect('/filmes');
+        return redirect('/filmes')
+            ->with('sucesso', 'Filme criado com sucesso!');
 
     } catch (\Exception $e) {
 
         DB::rollBack();
 
-        return back()->with('erro', 'Erro ao salvar filme');
+        dd($e);
     }
 }
 
@@ -67,57 +119,81 @@ class FilmeController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-{
-    $filme = Filme::findOrFail($id);
+    {
+        $filme = Filme::findOrFail($id);
 
-    $avaliacoes = $filme->avaliacoes()
-        ->with('usuario')
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $avaliacoes = $filme->avaliacoes()
+            ->with('usuario')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    return view('filmes.show', compact('filme', 'avaliacoes'));
-}
+        return view('filmes.show', compact('filme', 'avaliacoes'));
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(int $id)
     {
-        //
+        // Somente admin pode editar
+        abort_unless(auth()->check(), 403);
+        $filme = Filme::findOrFail($id);
+        return view('filmes.edit', compact('filme'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
 {
     $filme = Filme::findOrFail($id);
 
     $dados = $request->validate([
-
         'nome' => 'required|string',
+        'duracao' => 'nullable|string',
+        'data_lancamento' => 'nullable|date',
+        'classificacao' => 'nullable|string',
+        'sinopse' => 'nullable|string',
 
-        'poster' => 'sometimes|nullable|image|mimes:jpeg,png,webp|max:2048'
+        'imagens' => 'nullable',
+        'imagens.*' => 'image|mimes:jpeg,png,webp|max:2048'
     ]);
 
-    if ($request->hasFile('poster')) {
+    $filme->update([
+        'nome' => $dados['nome'],
+        'duracao' => $dados['duracao'] ?? null,
+        'data_lancamento' => $dados['data_lancamento'] ?? null,
+        'classificacao' => $dados['classificacao'] ?? null,
+        'sinopse' => $dados['sinopse'] ?? null,
+    ]);
 
-        if ($filme->poster_url) {
+    if ($request->hasFile('imagens')) {
 
-            Storage::disk('public')
-                ->delete($filme->poster_url);
+        $filme->imagens()->detach();
+
+        $arquivos = $request->file('imagens');
+
+        $posterIndex = $request->input('poster_index', 0);
+
+        foreach ($arquivos as $i => $arquivo) {
+
+            $caminho = $arquivo->store('imagens', 'public');
+
+            $imagem = \App\Models\Imagem::create([
+                'caminho' => $caminho,
+                'nome' => basename($caminho)
+            ]);
+
+            $filme->imagens()->attach($imagem->id, [
+                'poster' => ($i == $posterIndex)
+            ]);
         }
-
-        $dados['poster_url'] = $request
-            ->file('poster')
-            ->store('posters', 'public');
     }
 
-    $filme->update($dados);
-
-    return redirect('/filmes');
+    return redirect()
+        ->route('filmes.show', $filme->id)
+        ->with('sucesso', 'Filme atualizado com sucesso!');
 }
-
     /**
      * Remove the specified resource from storage.
      */

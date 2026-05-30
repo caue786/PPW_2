@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('filmes', function (Blueprint $table) {
+        Schema::table('imagem_filme', function (Blueprint $table) {
 
-            $table->string('poster_url')->nullable();
+            $table->boolean('poster')->default(false);
 
         });
     }
@@ -23,9 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('filmes', function (Blueprint $table) {
+        Schema::table('imagem_filme', function (Blueprint $table) {
 
-            $table->dropColumn('poster_url');
+            $table->dropColumn('poster');
 
         });
     }

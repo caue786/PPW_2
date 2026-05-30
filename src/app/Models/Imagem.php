@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Imagem extends Model
 {
+    protected $table = 'imagens';
     protected $fillable = [
 
         'nome',
@@ -13,15 +14,27 @@ class Imagem extends Model
     ];
     public function pessoas()
     {
-        return $this->belongsToMany(Pessoa::class);
+        return $this->belongsToMany(
+        Pessoa::class,
+        'imagem_pessoa'
+    )
+    ->withPivot('poster')
+    ->withTimestamps();
     }
 
     public function filmes()
     {
-        return $this->belongsToMany(Filme::class);
+        return $this->belongsToMany(\App\Models\Filme::class, 'imagem_filme')
+            ->withPivot('poster')
+            ->withTimestamps();
     }
     public function estudios()
     {
-        return $this->belongsToMany(Estudio::class);
+        return $this->belongsToMany(
+            Estudio::class,
+            'imagem_estudio'
+        )->withPivot('poster')
+            ->withTimestamps();
     }
+
 }
