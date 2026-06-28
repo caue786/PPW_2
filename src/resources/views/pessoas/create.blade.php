@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        @endif
+        
         <form method="POST" action="{{ route('pessoas.store') }}" enctype="multipart/form-data">
 
             @csrf

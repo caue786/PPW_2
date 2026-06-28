@@ -7,6 +7,7 @@ use App\Models\Filme;
 use App\Models\Pessoa;
 use App\Models\Estudio;
 use App\Models\Genero;
+use App\Models\Avaliacao;
 
 class HomeController extends Controller
 {
@@ -14,36 +15,51 @@ class HomeController extends Controller
     {
         $busca = $request->get('busca');
 
-        $filmes = collect();
-        $pessoas = collect();
+        // Inicializa as coleções
         $estudios = collect();
         $generos = collect();
+        $avaliacoes = collect();
 
         if ($busca) {
+
+            // Pesquisa
 
             $filmes = Filme::with('imagens')
                 ->where('nome', 'ilike', "%{$busca}%")
                 ->get();
 
             $pessoas = Pessoa::with([
+                'imagens',
                 'ator',
                 'diretor',
                 'escritor',
-                'produtor',
-                'imagens'
+                'produtor'
             ])
                 ->where('nome', 'ilike', "%{$busca}%")
                 ->get();
 
-            $estudios = Estudio::with('imagens')
-                ->where('nome', 'ilike', "%{$busca}%")
-                ->get();
+        } else {
 
-            $generos = Genero::where(
-                'nome',
-                'ilike',
-                "%{$busca}%"
-            )->get();
+            // Página inicial
+
+            $filmes = Filme::with('imagens')
+                ->paginate(6, ['*'], 'filmes');
+
+            $pessoas = Pessoa::with([
+                'imagens',
+                'ator',
+                'diretor',
+                'escritor',
+                'produtor'
+            ])->paginate(4, ['*'], 'pessoas');
+
+            $avaliacoes = Avaliacao::with([
+                'usuario',
+                'filme'
+            ])
+                ->latest()
+                ->take(9)
+                ->get();
         }
 
         return view('home', compact(
@@ -51,7 +67,9 @@ class HomeController extends Controller
             'pessoas',
             'estudios',
             'generos',
+            'avaliacoes',
             'busca'
         ));
     }
 }
+

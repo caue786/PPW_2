@@ -4,27 +4,32 @@
 
 @section('conteudo')
 
-    <div class="container mt-5">
+<div class="container mt-5">
 
-        <h1>Cadastrar Filme</h1>
+    <h1>Cadastrar Filme</h1>
 
-        {{-- ERROS --}}
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                @foreach ($errors->all() as $erro)
-                    <div>{{ $erro }}</div>
-                @endforeach
-            </div>
-        @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $erro)
+                <div>{{ $erro }}</div>
+            @endforeach
+        </div>
+    @endif
 
-        <form method="POST" action="{{ route('filmes.store') }}" enctype="multipart/form-data">
-            @csrf
+    <form method="POST"
+          action="{{ route('filmes.store') }}"
+          enctype="multipart/form-data">
 
-            @include('filmes.form-filme')
+        @csrf
 
-            <button class="btn btn-success">Salvar</button>
-        </form>
+        @include('filmes.form-filme')
 
-    </div>
+        <button class="btn btn-success">
+            Salvar
+        </button>
+
+    </form>
+
+</div>
 
 @endsection

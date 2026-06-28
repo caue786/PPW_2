@@ -7,6 +7,8 @@
     <title>@yield('titulo', 'DockFlix')</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+   
+
 
     @stack('styles')
 </head>
@@ -32,48 +34,23 @@
             {{-- me-2 = margem à direita (espaço entre imagem e texto, se tivesse) --}}
         </a>
         {{-- Drop dow --}}
-        <div class="btn-group me-3">
+     @auth
+    @if(Auth::user()->isAdmin())
 
-            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+        <a href="{{ route('admin') }}"
+           class="btn btn-primary me-3">
 
-                Catálogo
+            Painel Administrativo
 
-            </button>
+        </a>
 
-            <ul class="dropdown-menu">
-
-                <li>
-                    <a class="dropdown-item" href="{{ route('filmes.index') }}">
-                        Filmes
-                    </a>
-                </li>
-
-                <li>
-                    <a class="dropdown-item" href="{{ route('pessoas.index') }}">
-                        Pessoas
-                    </a>
-                </li>
-
-                <li>
-                    <a class="dropdown-item" href="{{ route('generos.index') }}">
-                        Gêneros
-                    </a>
-                </li>
-
-                <li>
-                    <a class="dropdown-item" href="{{ route('estudios.index') }}">
-                        Estúdios
-                    </a>
-                </li>
-
-            </ul>
-
-        </div>
+    @endif
+@endauth
         <!-- Barra de pesquisa -->
         <form method="GET" action="{{ route('home') }}" class="d-flex mx-auto w-50">
 
             <input class="form-control me-2" type="search" name="busca"
-                placeholder="Pesquisar filmes, pessoas ou estúdios..." value="{{ request('busca') }}">
+              placeholder="Pesquisar filmes ou pessoas..." value="{{ request('busca') }}">
 
             <button class="btn btn-primary">
                 Buscar

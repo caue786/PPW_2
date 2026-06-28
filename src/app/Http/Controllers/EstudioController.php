@@ -18,7 +18,7 @@ class EstudioController extends Controller
                 return $query->where('nome', 'ilike', "%{$busca}%");
             })
             ->orderBy('nome')
-            ->paginate(2)
+            ->paginate(3)
             ->withQueryString();
 
         return view('estudios.index', compact('estudios', 'busca'));

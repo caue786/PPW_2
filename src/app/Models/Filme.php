@@ -17,7 +17,8 @@ class Filme extends Model
     ];
     public function atores()
     {
-        return $this->belongsToMany(Ator::class);
+        return $this->belongsToMany(Ator::class)
+        ->withPivot('papel');
     }
     public function diretores()
     {
@@ -25,7 +26,7 @@ class Filme extends Model
     }
     public function produtores()
     {
-        return $this->belongsToMany(Produtor::class);
+        return $this->belongsToMany(Produtor::class,'produtor_filme');
     }
     public function escritores()
     {

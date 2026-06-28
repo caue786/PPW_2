@@ -28,7 +28,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect('/filmes');
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('admin');
+        }
+
+        return redirect()->route('home');
     }
 
     /**

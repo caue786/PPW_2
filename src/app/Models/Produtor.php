@@ -14,7 +14,7 @@ class Produtor extends Model
 
     public function filmes()
     {
-        return $this->belongsToMany(Filme::class);
+        return $this->belongsToMany(Filme::class,'produtor_filme');
     }
 
     public function pessoa()

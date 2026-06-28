@@ -12,8 +12,8 @@
             Novo Filme
         </a>
 
-       
-    </form>
+
+        </form>
 
         {{-- LISTA DE FILMES --}}
         <div class="row g-3">
@@ -68,6 +68,18 @@
                                 <a href="{{ route('filmes.edit', $filme->id) }}" class="btn btn-dark btn-sm">
                                     Editar
                                 </a>
+
+                                <form action="{{ route('filmes.destroy', $filme->id) }}" method="POST"
+                                    onsubmit="return confirm('Deseja realmente excluir este filme?')">
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Excluir
+                                    </button>
+
+                                </form>
 
                             </div>
 

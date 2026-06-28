@@ -39,15 +39,27 @@
 
                         <p>{{ $estudio->local }}</p>
 
-                        <div class="d-flex justify-content-center gap-2">
+                        <div class="d-flex justify-content-center gap-2 mt-3">
 
                             <a href="{{ route('estudios.show', $estudio->id) }}" class="btn btn-info btn-sm">
                                 Ver
                             </a>
 
-                            <a href="{{ route('estudios.edit', $estudio->id) }}" class="btn btn-dark btn-sm">
+                            <a href="{{ route('estudios.edit', $estudio->id) }}" class="btn btn-warning btn-sm">
                                 Editar
                             </a>
+
+                            <form action="{{ route('estudios.destroy', $estudio->id) }}" method="POST"
+                                onsubmit="return confirm('Deseja realmente excluir este estúdio?')">
+
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Excluir
+                                </button>
+
+                            </form>
 
                         </div>
 

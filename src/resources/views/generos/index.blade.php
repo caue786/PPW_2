@@ -4,70 +4,78 @@
 
 @section('conteudo')
 
-<div class="container mt-5">
+    <div class="container mt-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h1>Gêneros</h1>
+            <h1>Gêneros</h1>
 
-        <a href="{{ route('generos.create') }}" class="btn btn-primary">
-            Novo Gênero
-        </a>
+            <a href="{{ route('generos.create') }}" class="btn btn-primary">
+                Novo Gênero
+            </a>
 
-    </div>
+        </div>
 
-    
 
-    <div class="row g-4">
 
-        @forelse($generos as $genero)
+        <div class="row g-4">
 
-            <div class="col-md-3">
+            @forelse($generos as $genero)
 
-                <div class="card h-100 shadow-sm">
+                <div class="col-md-3">
 
-                    @if($genero->imagem)
+                    <div class="card h-100 shadow-sm">
 
-                        <img
-                            src="{{ asset('storage/' . $genero->imagem) }}"
-                            class="card-img-top"
-                            style="height:220px; object-fit:cover;">
+                        @if($genero->imagem)
 
-                    @else
+                            <img src="{{ asset('storage/' . $genero->imagem) }}" class="card-img-top"
+                                style="height:220px; object-fit:cover;">
 
-                        <div
-                            class="bg-dark text-white d-flex align-items-center justify-content-center"
-                            style="height:220px;">
+                        @else
 
-                            <h3 class="text-center px-2">
+                            <div class="bg-dark text-white d-flex align-items-center justify-content-center" style="height:220px;">
+
+                                <h3 class="text-center px-2">
+                                    {{ $genero->nome }}
+                                </h3>
+
+                            </div>
+
+                        @endif
+
+                        <div class="card-body text-center">
+
+                            <h5 class="card-title">
                                 {{ $genero->nome }}
-                            </h3>
+                            </h5>
 
-                        </div>
+                            <p class="text-muted">
+                                {{ $genero->filmes_count }} filme(s)
+                            </p>
 
-                    @endif
+                            <div class="d-flex justify-content-center gap-2 mt-3">
 
-                    <div class="card-body text-center">
+                                <a href="{{ route('generos.show', $genero->id) }}" class="btn btn-info btn-sm">
+                                    Ver
+                                </a>
 
-                        <h5 class="card-title">
-                            {{ $genero->nome }}
-                        </h5>
+                                <a href="{{ route('generos.edit', $genero->id) }}" class="btn btn-warning btn-sm">
+                                    Editar
+                                </a>
 
-                        <p class="text-muted">
-                            {{ $genero->filmes_count }} filme(s)
-                        </p>
+                                <form action="{{ route('generos.destroy', $genero->id) }}" method="POST"
+                                    onsubmit="return confirm('Deseja realmente excluir este gênero?')">
 
-                        <div class="d-flex justify-content-center gap-2">
+                                    @csrf
+                                    @method('DELETE')
 
-                            <a href="{{ route('generos.show', $genero->id) }}"
-                               class="btn btn-info btn-sm">
-                                Ver
-                            </a>
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Excluir
+                                    </button>
 
-                            <a href="{{ route('generos.edit', $genero->id) }}"
-                               class="btn btn-warning btn-sm">
-                                Editar
-                            </a>
+                                </form>
+
+                            </div>
 
                         </div>
 
@@ -75,26 +83,24 @@
 
                 </div>
 
-            </div>
+            @empty
 
-        @empty
+                <div class="col-12">
 
-            <div class="col-12">
+                    <div class="alert alert-info">
+                        Nenhum gênero encontrado.
+                    </div>
 
-                <div class="alert alert-info">
-                    Nenhum gênero encontrado.
                 </div>
 
-            </div>
+            @endforelse
 
-        @endforelse
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            {{ $generos->links() }}
+        </div>
 
     </div>
-
-    <div class="d-flex justify-content-center mt-4">
-        {{ $generos->links() }}
-    </div>
-
-</div>
 
 @endsection
